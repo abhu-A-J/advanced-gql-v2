@@ -8,6 +8,15 @@
       "avatar": "http",
       "createdAt": 1571213104370,
       "id": "Z2hlvDmLOSRZGebC_Z_aA"
+    },
+    {
+      "email": "abhu@gmail.com",
+      "password": "Password123!",
+      "role": "ADMIN",
+      "verified": false,
+      "avatar": "http",
+      "createdAt": 1631219310359,
+      "id": "cioEkT6JYxirj6WIev4vJ"
     }
   ],
   "posts": [],
