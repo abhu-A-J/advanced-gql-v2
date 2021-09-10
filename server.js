@@ -8,7 +8,8 @@ const typeDefs = gql`
   type User {
     id: ID!
     username: String!
-    createdAt: String
+    createdAt: String!
+    error: String!
   }
 
   type Settings {
@@ -76,6 +77,14 @@ const resolvers = {
     },
   },
 
+  Subscription: {
+    newItem: {
+      subscribe: () => {
+        return pubSub.asyncIterator(NEW_ITEM);
+      },
+    },
+  },
+
   Settings: {
     user(settings) {
       return {
@@ -86,11 +95,9 @@ const resolvers = {
     },
   },
 
-  Subscription: {
-    newItem: {
-      subscribe: () => {
-        return pubSub.asyncIterator(NEW_ITEM);
-      },
+  User: {
+    error() {
+      throw new Error('noooo');
     },
   },
 };
