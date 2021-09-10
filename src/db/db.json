@@ -3,7 +3,7 @@
     {
       "email": "member@member.com",
       "password": "password",
-      "role": "ADMIN",
+      "role": "MEMBER",
       "verified": false,
       "avatar": "http",
       "createdAt": 1571213104370,

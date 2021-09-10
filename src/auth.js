@@ -44,8 +44,8 @@ const authenticated = (next) => (root, args, context, info) => {
  * @param {Function} next next resolver function to run
  */
 const authorized = (role, next) => (root, args, context, info) => {
-  if (!context.user.role === role) {
-    throw new Error('Not Authorized' + role);
+  if (context.user.role !== role) {
+    throw new Error(`${context.user.role} is not authorized. Only ${role} allowed`);
   }
 
   return next(root, args, context, info);
