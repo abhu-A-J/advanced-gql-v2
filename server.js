@@ -1,4 +1,8 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql, PubSub } = require('apollo-server');
+
+const pubSub = new PubSub();
+
+const NEW_ITEM = 'NEW_ITEM';
 
 const typeDefs = gql`
   type User {
@@ -22,8 +26,17 @@ const typeDefs = gql`
     theme: String!
   }
 
-  type Mutations {
+  type Item {
+    task: String!
+  }
+
+  type Mutation {
     settings(input: NewSettingsInput): Settings!
+    createItem(input: String!): Item!
+  }
+
+  type Subscription {
+    newItem: Item!
   }
 `;
 
@@ -48,9 +61,18 @@ const resolvers = {
       };
     },
   },
-  Mutations: {
+
+  Mutation: {
     settings(_, { input }) {
       return input;
+    },
+
+    createItem(_, { input }) {
+      const item = { task: input };
+
+      pubSub.publish(NEW_ITEM, { newItem: item });
+
+      return item;
     },
   },
 
@@ -63,11 +85,31 @@ const resolvers = {
       };
     },
   },
+
+  Subscription: {
+    newItem: {
+      subscribe: () => {
+        return pubSub.asyncIterator(NEW_ITEM);
+      },
+    },
+  },
 };
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context({ connection }) {
+    if (connection) {
+      return {
+        ...connection.context,
+      };
+    }
+  },
+  subscriptions: {
+    onConnect(params) {
+      // params is similar to req.header
+    },
+  },
 });
 
 server.listen(3000).then(() => {
