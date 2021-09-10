@@ -38,6 +38,12 @@ const server = new ApolloServer({
       return { user };
     },
   },
+
+  // error logger/reporting/formatting
+  formatError(err) {
+    console.log(err);
+    return err;
+  },
 });
 
 server.listen(4000).then(({ url }) => {
