@@ -1,12 +1,47 @@
-const { ApolloServer, gql, PubSub } = require('apollo-server');
+const {
+  ApolloServer,
+  gql,
+  PubSub,
+  SchemaDirectiveVisitor,
+} = require('apollo-server');
+
+const { defaultFieldResolver, GraphQLString } = require('graphql');
 
 const pubSub = new PubSub();
 
 const NEW_ITEM = 'NEW_ITEM';
 
+class LogDirective extends SchemaDirectiveVisitor {
+  visitFieldDefinition(field) {
+    // we need default field resolver since we don't have a custom resolver for
+    // ID field where log directive is used
+
+    const resolver = field.resolve || defaultFieldResolver;
+
+    field.args.push({
+      type: GraphQLString,
+      name: 'message',
+    });
+
+    field.resolve = (root, args, ctx, info) => {
+      const { message, ...restArgs } = args;
+
+      const { message: defaultMessage } = this.args;
+
+      console.log(message || defaultMessage);
+
+      return resolver.call(this, root, restArgs, ctx, info);
+    };
+
+    // all field have a resolve method which is used to resolve the value
+  }
+}
+
 const typeDefs = gql`
+  directive @log(message: String = "Default message") on FIELD_DEFINITION
+
   type User {
-    id: ID!
+    id: ID! @log
     username: String!
     createdAt: String!
 
@@ -107,6 +142,9 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  schemaDirectives: {
+    log: LogDirective,
+  },
   context({ connection }) {
     if (connection) {
       return {
