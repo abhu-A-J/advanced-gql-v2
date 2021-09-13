@@ -3,6 +3,7 @@ const typeDefs = require('./typedefs');
 const resolvers = require('./resolvers');
 const { createToken, getUserFromToken } = require('./auth');
 const db = require('./db');
+const { FormatDateDirective } = require('./directives');
 
 const server = new ApolloServer({
   typeDefs,
@@ -43,6 +44,11 @@ const server = new ApolloServer({
   formatError(err) {
     console.log(err);
     return err;
+  },
+
+  // custom directives
+  schemaDirectives: {
+    formatDate: FormatDateDirective,
   },
 });
 
