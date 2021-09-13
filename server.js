@@ -9,7 +9,9 @@ const typeDefs = gql`
     id: ID!
     username: String!
     createdAt: String!
-    error: String!
+
+    # default directive called depreacted
+    error: String! @deprecated(reason: "Use hasError instead")
   }
 
   type Settings {
@@ -97,7 +99,7 @@ const resolvers = {
 
   User: {
     error() {
-      throw new Error('noooo');
+      return 'Throw an error here';
     },
   },
 };
