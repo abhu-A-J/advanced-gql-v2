@@ -12,9 +12,9 @@ const pubSub = new PubSub();
  */
 module.exports = {
   Query: {
-    me: authenticated((_, __, { user }) => {
+    me: (_, __, { user }) => {
       return user;
-    }),
+    },
     posts: authenticated((_, __, { user, models }) => {
       return models.Post.findMany({ author: user.id });
     }),
@@ -49,16 +49,14 @@ module.exports = {
     }),
 
     // admin role
-    invite: authenticated(
-      authorized('ADMIN', (_, { input }, { user }) => {
-        return {
-          from: user.id,
-          role: input.role,
-          createdAt: Date.now(),
-          email: input.email,
-        };
-      })
-    ),
+    invite: (_, { input }, { user }) => {
+      return {
+        from: user.id,
+        role: input.role,
+        createdAt: Date.now(),
+        email: input.email,
+      };
+    },
 
     signup(_, { input }, { models, createToken }) {
       const existing = models.User.findOne({ email: input.email });
